@@ -1,9 +1,6 @@
 package com.archit.dev.gamemanager.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 // LOMBOK CAN BE USED TO AVOID THE CREATION OF GETTERS AND SETTERS
 
@@ -14,10 +11,14 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "title", nullable = false)
     private String title;
+
     private String genre;
     private int totalHours;
     private int rating;
+
+    @Column(name = "status", nullable = false)
     private String status;
 
     public Game() {
