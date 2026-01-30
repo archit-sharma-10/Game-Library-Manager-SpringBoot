@@ -1,5 +1,6 @@
 package com.archit.dev.gamemanager.service;
 import com.archit.dev.gamemanager.entity.Game;
+import com.archit.dev.gamemanager.exception.GameNotFoundException;
 import com.archit.dev.gamemanager.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class GameService {
     }
     public Game getGameById(Long id){
         return gameRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No game found with id: " + id));
+                .orElseThrow(() -> new GameNotFoundException("No game found with id: " + id));
     }
 
     // Put methods, entry updation
@@ -39,7 +40,7 @@ public class GameService {
     // Delete methods
     public void deleteGameById(Long id){
         if(!gameRepository.existsById(id)){
-            throw new RuntimeException("No game found with id: " + id);
+            throw new GameNotFoundException("No game found with id: " + id);
         }
         gameRepository.deleteById(id);
     }
