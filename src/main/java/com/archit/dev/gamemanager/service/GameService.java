@@ -1,5 +1,6 @@
 package com.archit.dev.gamemanager.service;
 import com.archit.dev.gamemanager.entity.Game;
+import com.archit.dev.gamemanager.exception.GameAlreadyExistsException;
 import com.archit.dev.gamemanager.exception.GameNotFoundException;
 import com.archit.dev.gamemanager.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ public class GameService {
 
     // Post methods
     public Game createGame(Game inputGame){
+        if(gameRepository.existsByTitleIgnoreCase(inputGame.getTitle())){
+            throw new GameAlreadyExistsException("Game already exists with title: " + inputGame.getTitle());
+        }
         return gameRepository.save(inputGame);
     }
 
@@ -29,6 +33,11 @@ public class GameService {
     // Put methods, entry updation
     public Game updateGameById(Long id, Game updatedGame){
         Game game = getGameById(id);
+        if(!game.getTitle().equalsIgnoreCase(updatedGame.getTitle())){
+            if(gameRepository.existsByTitleIgnoreCase(updatedGame.getTitle())){
+                throw new GameAlreadyExistsException("Game already exists with title: " + updatedGame.getTitle());
+            }
+        }
         game.setTitle(updatedGame.getTitle());
         game.setGenre(updatedGame.getGenre());
         game.setTotalHours(updatedGame.getTotalHours());
