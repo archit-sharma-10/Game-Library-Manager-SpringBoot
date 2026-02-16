@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(
                 status.value(),
                 status.name(),
-                e.getMessage(),
+                "Validation failed",
                 request.getRequestURI()
         );
         Map<String, String> validationErrors = new HashMap<>();

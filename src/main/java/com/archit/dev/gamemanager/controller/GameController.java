@@ -2,6 +2,7 @@ package com.archit.dev.gamemanager.controller;
 import java.util.*;
 import com.archit.dev.gamemanager.service.GameService;
 import com.archit.dev.gamemanager.entity.Game;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,7 @@ public class GameController {
     private GameService gameService;
 
     @PostMapping
-    public Game postGames(@RequestBody Game requestBody){
+    public Game postGames(@Valid @RequestBody Game requestBody){
         gameService.createGame(requestBody);
         return requestBody;
     }
@@ -28,7 +29,7 @@ public class GameController {
     }
 
     @PutMapping("/{id}")
-    public Game updateGameById(@PathVariable Long id, @RequestBody Game requestBody){
+    public Game updateGameById(@PathVariable Long id, @Valid @RequestBody Game requestBody){
         return gameService.updateGameById(id, requestBody);
     }
 
