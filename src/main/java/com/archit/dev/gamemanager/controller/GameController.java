@@ -1,7 +1,9 @@
 package com.archit.dev.gamemanager.controller;
 import java.util.*;
+
+import com.archit.dev.gamemanager.dto.GameRequestDTO;
+import com.archit.dev.gamemanager.dto.GameResponseDTO;
 import com.archit.dev.gamemanager.service.GameService;
-import com.archit.dev.gamemanager.entity.Game;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,23 +15,22 @@ public class GameController {
     private GameService gameService;
 
     @PostMapping
-    public Game postGames(@Valid @RequestBody Game requestBody){
-        gameService.createGame(requestBody);
-        return requestBody;
+    public GameResponseDTO postGames(@Valid @RequestBody GameRequestDTO requestBody){
+        return gameService.createGame(requestBody);
     }
 
     @GetMapping
-    public List<Game> getGames(){
+    public List<GameResponseDTO> getGames(){
         return gameService.showGame();
     }
 
     @GetMapping("/{id}")
-    public Game getGameById(@PathVariable Long id){
+    public GameResponseDTO getGameById(@PathVariable Long id){
         return gameService.getGameById(id);
     }
 
     @PutMapping("/{id}")
-    public Game updateGameById(@PathVariable Long id, @Valid @RequestBody Game requestBody){
+    public GameResponseDTO updateGameById(@PathVariable Long id, @Valid @RequestBody GameRequestDTO requestBody){
         return gameService.updateGameById(id, requestBody);
     }
 

@@ -1,4 +1,6 @@
 package com.archit.dev.gamemanager.service;
+import com.archit.dev.gamemanager.dto.GameRequestDTO;
+import com.archit.dev.gamemanager.dto.GameResponseDTO;
 import com.archit.dev.gamemanager.entity.Game;
 import com.archit.dev.gamemanager.exception.GameAlreadyExistsException;
 import com.archit.dev.gamemanager.exception.GameNotFoundException;
@@ -14,25 +16,35 @@ public class GameService {
     private GameRepository gameRepository;
 
     // Post methods
-    public Game createGame(Game inputGame){
+    public GameResponseDTO createGame(GameRequestDTO inputGame){
         if(gameRepository.existsByTitleIgnoreCase(inputGame.getTitle())){
             throw new GameAlreadyExistsException("Game already exists with title: " + inputGame.getTitle());
         }
-        return gameRepository.save(inputGame);
+        Game game = mapToEntity(inputGame);
+        Game savedGame = gameRepository.save(game);
+
+        return mapToResponse(savedGame);
     }
 
     // Get methods
-    public List<Game> showGame(){
-        return gameRepository.findAll();
+    public List<GameResponseDTO> showGame(){
+        List<Game> games = gameRepository.findAll();
+        List<GameResponseDTO> responseList = new ArrayList<>();
+        for(Game game : games){
+            responseList.add(mapToResponse(game));
+        }
+        return responseList;
     }
-    public Game getGameById(Long id){
-        return gameRepository.findById(id)
+    public GameResponseDTO getGameById(Long id){
+        Game game = gameRepository.findById(id)
                 .orElseThrow(() -> new GameNotFoundException("No game found with id: " + id));
+        return mapToResponse(game);
     }
 
     // Put methods, entry updation
-    public Game updateGameById(Long id, Game updatedGame){
-        Game game = getGameById(id);
+    public GameResponseDTO updateGameById(Long id, GameRequestDTO updatedGame){
+        Game game = gameRepository.findById(id)
+                .orElseThrow(() -> new GameNotFoundException("No game found with id: " + id));
         if(!game.getTitle().equalsIgnoreCase(updatedGame.getTitle())){
             if(gameRepository.existsByTitleIgnoreCase(updatedGame.getTitle())){
                 throw new GameAlreadyExistsException("Game already exists with title: " + updatedGame.getTitle());
@@ -43,7 +55,9 @@ public class GameService {
         game.setTotalHours(updatedGame.getTotalHours());
         game.setRating(updatedGame.getRating());
         game.setStatus(updatedGame.getStatus());
-        return gameRepository.save(game);
+
+        Game savedGame = gameRepository.save(game);
+        return mapToResponse(savedGame);
     }
 
     // Delete methods
@@ -52,5 +66,27 @@ public class GameService {
             throw new GameNotFoundException("No game found with id: " + id);
         }
         gameRepository.deleteById(id);
+    }
+
+    // Mapping methods for DTO and Entity
+    private Game mapToEntity(GameRequestDTO dto){
+        Game game = new Game();
+        game.setTitle(dto.getTitle());
+        game.setGenre(dto.getGenre());
+        game.setTotalHours(dto.getTotalHours());
+        game.setRating(dto.getRating());
+        game.setStatus(dto.getStatus());
+        return game;
+    }
+
+    private GameResponseDTO mapToResponse(Game game){
+        GameResponseDTO response = new GameResponseDTO();
+        response.setId(game.getId());
+        response.setTitle(game.getTitle());
+        response.setGenre(game.getGenre());
+        response.setTotalHours(game.getTotalHours());
+        response.setRating(game.getRating());
+        response.setStatus(game.getStatus());
+        return response;
     }
 }
