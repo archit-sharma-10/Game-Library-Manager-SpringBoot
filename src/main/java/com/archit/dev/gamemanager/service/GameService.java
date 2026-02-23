@@ -2,8 +2,10 @@ package com.archit.dev.gamemanager.service;
 import com.archit.dev.gamemanager.dto.GameRequestDTO;
 import com.archit.dev.gamemanager.dto.GameResponseDTO;
 import com.archit.dev.gamemanager.entity.Game;
+import com.archit.dev.gamemanager.entity.GameDetails;
 import com.archit.dev.gamemanager.exception.GameAlreadyExistsException;
 import com.archit.dev.gamemanager.exception.GameNotFoundException;
+import com.archit.dev.gamemanager.repository.GameDetailsRepository;
 import com.archit.dev.gamemanager.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,12 @@ public class GameService {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private GameDetailsRepository gameDetailsRepository;
+
+    @Autowired
+    private RawgService rawgService;
+
     // Post methods
     public GameResponseDTO createGame(GameRequestDTO inputGame){
         if(gameRepository.existsByTitleIgnoreCase(inputGame.getTitle())){
@@ -22,6 +30,14 @@ public class GameService {
         }
         Game game = mapToEntity(inputGame);
         Game savedGame = gameRepository.save(game);
+
+        GameDetails details = new GameDetails();
+        details.setGame(savedGame);
+        String description = rawgService.fetchDescription(savedGame.getTitle());
+        details.setDescription(description);
+        details.setNotes("");
+        details.setFavouriteMoment("");
+        gameDetailsRepository.save(details);
 
         return mapToResponse(savedGame);
     }
@@ -65,6 +81,7 @@ public class GameService {
         if(!gameRepository.existsById(id)){
             throw new GameNotFoundException("No game found with id: " + id);
         }
+        gameDetailsRepository.deleteByGameId(id);
         gameRepository.deleteById(id);
     }
 
@@ -87,6 +104,15 @@ public class GameService {
         response.setTotalHours(game.getTotalHours());
         response.setRating(game.getRating());
         response.setStatus(game.getStatus());
+
+        Optional<GameDetails> detailsOpt = gameDetailsRepository.findByGameId(game.getId());
+
+        if(detailsOpt.isPresent()){
+            GameDetails details = detailsOpt.get();
+            response.setDescription(details.getDescription());
+            response.setNotes(details.getNotes());
+            response.setFavouriteMoment(details.getFavouriteMoment());
+        }
         return response;
     }
 }
