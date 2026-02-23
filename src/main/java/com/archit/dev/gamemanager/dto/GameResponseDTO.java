@@ -10,4 +10,7 @@ public class GameResponseDTO {
     private int totalHours;
     private int rating;
     private String status;
+    private String description;
+    private String notes;
+    private String favouriteMoment;
 }

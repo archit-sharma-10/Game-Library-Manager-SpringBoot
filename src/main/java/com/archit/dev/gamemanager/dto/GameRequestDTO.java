@@ -16,7 +16,7 @@ public class GameRequestDTO {
     private int totalHours;
 
     @Min(value = 1, message = "Rating must at least be 1")
-    @Max(value = 100, message = "Rating cannot exceed 100")
+    @Max(value = 10, message = "Rating cannot exceed 10")
     private int rating;
 
     @NotBlank(message = "Status cannot be blank")
