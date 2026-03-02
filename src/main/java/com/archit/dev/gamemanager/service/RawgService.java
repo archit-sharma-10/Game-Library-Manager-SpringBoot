@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.jsoup.Jsoup;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +40,7 @@ public class RawgService {
             String detailsUrl = baseUrl + "/games/" + gameId + "?key=" + apiKey;
             Map detailsResponse = restTemplate.getForObject(detailsUrl, Map.class);
             String description = (String) detailsResponse.get("description_raw");
+            description = Jsoup.parse(description).text();
             return description != null ? description : "No description available";
 
         } catch (Exception e) {

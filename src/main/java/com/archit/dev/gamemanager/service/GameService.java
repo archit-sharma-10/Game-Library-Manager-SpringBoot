@@ -1,6 +1,7 @@
 package com.archit.dev.gamemanager.service;
 import com.archit.dev.gamemanager.dto.GameRequestDTO;
 import com.archit.dev.gamemanager.dto.GameResponseDTO;
+import com.archit.dev.gamemanager.dto.UpdateDetailsDTO;
 import com.archit.dev.gamemanager.entity.Game;
 import com.archit.dev.gamemanager.entity.GameDetails;
 import com.archit.dev.gamemanager.exception.GameAlreadyExistsException;
@@ -74,6 +75,21 @@ public class GameService {
 
         Game savedGame = gameRepository.save(game);
         return mapToResponse(savedGame);
+    }
+
+    public GameResponseDTO updateGameById(Long id, UpdateDetailsDTO dto){
+        Game game = gameRepository.findById(id)
+                .orElseThrow(() -> new GameNotFoundException("No game found with id: " + id));
+
+        GameDetails details = gameDetailsRepository.findByGameId(id)
+                .orElseThrow(() -> new GameNotFoundException("GameDetails not found for id: " + id));
+
+        details.setNotes(dto.getNotes());
+        details.setFavouriteMoment(dto.getFavouriteMoment());
+
+        gameDetailsRepository.save(details);
+
+        return mapToResponse(game);
     }
 
     // Delete methods
